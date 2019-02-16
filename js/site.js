@@ -1,12 +1,18 @@
 
 var myAudio = document.querySelector('audio');
-var audioCtx;
-var audioSource;
+let audioCtx = new AudioContext()
+let audioSource
+let analyser = audioCtx.createAnalyser()
+
 
 //inputs
 
 let startButton
 let stopButton
+
+let testFreq
+
+let timer
 
 //var startButton = document.getElementById("start");
 //var stopButton = document.getElementById("stop");
@@ -16,13 +22,18 @@ var start = function () {
         console.log('getUserMedia supported.');
         navigator.mediaDevices.getUserMedia ({audio: true, video: false})
         .then(function(stream) {
+
+            timer = window.setInterval(getFrequencies, 1);
+            
+            console.log("in then func")
             
             // Create a MediaStreamAudioSourceNode
             // Feed the HTMLMediaElement into it
-            audioCtx = new AudioContext();
-            audioSource = audioCtx.createMediaStreamSource(stream);
 
-            audioSource.connect(audioCtx.destination);
+            audioSource = audioCtx.createMediaStreamSource(stream)
+
+            audioSource.connect(analyser)
+            analyser.connect(audioCtx.destination)
             
         })
         .catch(function(err) {
@@ -40,14 +51,32 @@ var start = function () {
 var stop = function () {
     if (audioCtx) {
          audioCtx.close().then(function () {
-            
+            //for now, refresh the window
+            location.reload()
         })
     }
+    if (timer) {
+        window.clearInterval(timer)
+        timer = null
+    }
+}
+
+var getFrequencies = function () {
+    analyser.fftSize = 2048 //todo: what should this be?
+    let bufferLength = analyser.frequencyBinCount
+    let dataArray = new Uint8Array(bufferLength)
+    analyser.getByteFrequencyData(dataArray)
+
+    
+
+    //console.log(dataArray.sort()[bufferLength - 1])
 }
 
 window.onload = function () {
     startButton = document.getElementById("start")
     stopButton = document.getElementById("stop")
+    testFreq = document.getElementById("whatFreq")
+    testFreq.onclick = getFrequencies()
     startButton.onclick = start
     stopButton.onclick = stop
 }
