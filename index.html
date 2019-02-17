@@ -16,6 +16,10 @@
     <div>
         <input id = "start" type="button" value = "Start">
         <input id = "stop" type="button" value = "Stop">
+        <input id = "selectMic" type="radio" name = "selectSource">
+        <label for="selectMic">Microphone</label>
+        <input id = "selectOpus" type = "radio" name = "selectSource">
+        <label for="selectOpus">Select File Playback</label>
         <input id = "whatFreq" type ="button" value = "testFreq">
     </div>
     <div>
@@ -23,7 +27,15 @@
 
         </canvas>
     </div>
-    
+    <div>
+        <input id = "saveText" type="text" placeholder="Song Name To Save or Load ">
+        <input id = "saveButton" type="button" value="Save">
+        <input id = "loadButton" type="button" value="Load">
+        <p id = "serverOutput"></p>
+    </div>
+    <div>
+        <audio id="audioPlayer" controls></audio>
+    </div>
     <div>
         <textarea id = "textarea" value = "">
          </textarea>

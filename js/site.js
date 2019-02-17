@@ -1,11 +1,20 @@
 
 var myAudio = document.querySelector('audio');
+
 let audioCtx
 let audioSource
+let audioPlayer
+let recorder
 let analyser
+let chunks = []
+let blob
+
+let timer
+
+let running = false
 
 const FFT_SIZE = 8192
-const MIN_DB = -32
+const MIN_DB = -100
 
 STATES = {
     zero: 0,
@@ -15,19 +24,20 @@ STATES = {
 let state = STATES.zero
 
 //inputs
-
 let startButton
 let stopButton
 let testFreq
+let saveButton
+let selectMic
+let selectOpus
+let serverOutput
+
+//draw stuff
 let canvas
 let context
 
 let sizeX = 1500
 let sizeY = 300
-
-let timer
-
-let running = false
 
 let csvContent = []
 
@@ -46,47 +56,108 @@ VexTab = vextab.VexTab;
 Artist = vextab.Artist;
 Renderer = Vex.Flow.Renderer;
 
+function onDataAvailable(evt) {
+    console.log("push chunk data")
+    chunks.push(evt.data)
+}
 
+function onStop(evt) {
+    console.log("////stopping///")
+    //console.log(chunks)
+    blob = new Blob(chunks, { 'type' : 'audio/ogg; codecs=opus' });
+    document.getElementById("audioPlayer").src = URL.createObjectURL(blob);
+}
 
-//var startButton = document.getElementById("start");
-//var stopButton = document.getElementById("stop");
+function start() {
 
-var start = function () {
+    readings = []
+
+    audioCtx = new AudioContext()
+
     if (running) {
         alert("Already started!")
         return
     }
-    if (navigator.mediaDevices) {
+    if (navigator.mediaDevices && selectMic.checked) {
         console.log('getUserMedia supported.');
         navigator.mediaDevices.getUserMedia ({audio: true, video: false})
         .then(function(stream) {
-
             //timer = window.setInterval(getFrequencies, 1);
             
-            console.log("in then func")
+    console.log("in then func")
             
-            // Create a MediaStreamAudioSourceNode
-            // Feed the HTMLMediaElement into it
+    // Create a MediaStreamAudioSourceNode
+    // Feed the HTMLMediaElement into it
 
-            running = true
-            
-            audioCtx = new AudioContext()
+    running = true
 
-            analyser = audioCtx.createAnalyser()
+    analyser = audioCtx.createAnalyser()
+    recorder = new MediaRecorder(stream)
 
-            audioSource = audioCtx.createMediaStreamSource(stream)
+    audioSource = audioCtx.createMediaStreamSource(stream)
 
-            audioSource.connect(analyser)
-            analyser.connect(audioCtx.destination)
+    audioSource.connect(analyser)
+    analyser.connect(audioCtx.destination)
 
-            drawArray()
-            
+    recorder = new MediaRecorder(stream)
+
+    recorder.ondataavailable = onDataAvailable
+    recorder.onstop = onStop
+
+    recorder.start()
+
+    drawArray()
         })
         .catch(function(err) {
             console.log('The following gUM error occured: ' + err);
-        }); 
+            console.log(err.stack)
+        });
         
-    } else {
+    }
+    else if (selectOpus.checked) {
+        
+        let fileReader = new FileReader()
+        let arrayBuffer
+        //let source
+
+        console.log("load opus")
+
+        fileReader.onloadend = () => {
+            
+            arrayBuffer = fileReader.result
+            //console.log(arrayBuffer)
+            //fileReader.readAsArrayBuffer(blob)
+
+            audioCtx.decodeAudioData(arrayBuffer, function(buffer) {
+                audioSource = audioCtx.createBufferSource()
+                audioSource.buffer = buffer
+                //timer = window.setInterval(getFrequencies, 1);
+            
+                console.log("loaded opus, running...")
+
+                running = true
+
+                analyser = audioCtx.createAnalyser()
+
+                audioSource.connect(analyser)
+                analyser.connect(audioCtx.destination)
+
+                audioSource.start()
+
+                drawArray()
+
+            }, function(err) {
+            console.log(err)
+            }
+            );
+
+        }
+
+        fileReader.readAsArrayBuffer(blob)
+        console.log("loading opus....")
+
+    }
+     else {
         console.log('getUserMedia not supported on your browser!');
     }
 
@@ -112,11 +183,11 @@ var stop = function () {
                 if(!nonzero) csvContent.splice(i,1);
             }
             //var data = encodeURI('data:text/csv;charset=utf-8,' + csvContent.join("\n"));
+            
+            //console.log("thinking")
 
-            var textarea = document.getElementById("textarea");
-            textarea.value = csvContent.join("\n")
-
-
+            //var textarea = document.getElementById("textarea");
+            //textarea.value = csvContent.join("\n")
 
             // var link = document.createElement('a');
             // link.setAttribute('href', data);
@@ -125,10 +196,14 @@ var stop = function () {
 
         })
     }
+    if (recorder) {
+        recorder.stop()
+    }
     if (timer) {
         window.clearInterval(timer)
         timer = null
     }
+    
 }
 
 var getFrequencies = function () {
@@ -214,15 +289,80 @@ function drawArray() {
     freq = getFrequencies()
     context.clearRect(0, 0, sizeX, sizeY)
     context.lineWidth = 1
-    let barWidth = 4
+    let barWidth = 5
     for (var i = 0; i < freq.length; i++) {
-        context.strokeStyle = "red"
-        context.fillStyle = "black"
-        context.fillRect(i * barWidth, 255 - freq.array[i], barWidth, freq.array[i])
-        context.strokeRect(i * barWidth, 255 - freq.array[i], barWidth, freq.array[i])
+        context.strokeStyle = "white"
+
+        var grd = context.createLinearGradient(i * barWidth, 0, i *barWidth, 255);
+        grd.addColorStop(0, "red");
+        grd.addColorStop(0.5, "orange");
+        grd.addColorStop(1, "#87ffff");
+
+        context.fillStyle = grd
+        context.fillRect((i * barWidth), 255 - freq.array[i], barWidth - 1, freq.array[i])
+        context.fillStyle = "white"
+        context.fillRect((i * barWidth), 255 - freq.array[i], 1, freq.array[i])
+        //context.strokeRect(i * barWidth, 255 - freq.array[i], barWidth, freq.array[i])
+    }
+}
+
+function save() {
+    if (!blob)  {
+        alert("You need to have played and then stopped to save!")
+        return
+    }
+    else {
+        let name = saveText.value
+        if (name == "") {
+            alert("Must include a name for the recording!")
+            return
+        }
+
+        var formData = new FormData();
+        console.log(blob)
+        formData.append('file', blob, name + '.opus');
+        $.ajax({
+            type: 'POST',
+            url: '/saveRecording',
+            data: formData,
+            processData: false,
+            contentType: false
+        }).done(function(data) {
+            console.log(data);
+            jobj = JSON.parse(data)
+            serverOutput.innerHTML = 'Saved file as: ' + jobj['file']
+        });
+
+        //todo: If you need it... posting json to server
+        // let requestJson = {
+        //     name:name,
+        //     blob:blob
+        // }
+
+        // $.post("saveRecording", JSON.stringify(requestJson), function(data, status) {
+        //     console.log("save status: " + status)
+        // })
     }
 
-    
+}
+
+function load() {
+    let name = saveText.value
+    if (name == "") {
+        alert("Must include a name for the recording!")
+        return
+    }
+
+    var oReq = new XMLHttpRequest();
+    oReq.open("GET", "recordings/" + name + ".opus", true);
+    oReq.responseType = "blob";
+
+    oReq.onload = function(oEvent) {
+    blob = oReq.response;
+    serverOutput.innerHTML = "Loaded: " + name +".opus!";
+    };
+
+    oReq.send();
 
 }
 
@@ -230,18 +370,29 @@ window.onload = function () {
     startButton = document.getElementById("start")
     stopButton = document.getElementById("stop")
     testFreq = document.getElementById("whatFreq")
+    audioPlayer = document.getElementById("audioPlayer")
+    saveText = document.getElementById("saveText")
+    saveButton = document.getElementById("saveButton")
+    selectMic = document.getElementById("selectMic")
+    selectMic.checked = true
+    selectOpus = document.getElementById("selectOpus")
 
     canvas = document.getElementById("canvas")
     canvas.width = sizeX
     canvas.height = sizeY
     context = canvas.getContext("2d")
+
+    serverOutput = document.getElementById("serverOutput")
     //testFreq.onclick = getFrequencies()
 
     startButton.onclick = start
     stopButton.onclick = stop
 
-    var textarea = document.getElementById("textarea")
-    textarea.value = ""
+    saveButton.onclick = save
+    loadButton.onclick = load
+
+    //var textarea = document.getElementById("textarea")
+    //textarea.value = ""
 }
 
 function analyzeInput(data){
@@ -275,7 +426,11 @@ function allZeroes(data){
     }
     return true
 }
-
+function clearCanvas(){
+    var canvas = document.getElementById('boo')
+    const context = canvas.getContext('2d');
+    context.clearRect(100, 100, 1000, 1000);
+}
 function displayNote(obj){
     var canvas = document.getElementById('boo')
     const context = canvas.getContext('2d');
