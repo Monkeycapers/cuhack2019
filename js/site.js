@@ -39,7 +39,7 @@ let noteStart = 0
 let noteStop = 0
 
 vextab = VexTabDiv
-let temp = "tabstave notation=true time=4/4"
+let temp = "tabstave notation=true time=4/4\nnotes "
 VexTab = vextab.VexTab;
 Artist = vextab.Artist;
 Renderer = Vex.Flow.Renderer;
@@ -149,7 +149,7 @@ var getFrequencies = function () {
             noteStart = Date.now()
             let length = noteStart - noteStop
             console.log(length) // LENGTH OF REST in ms
-            displayNote({note: "##", duration: length}, vextab, artist)
+            if(length > 1000) displayNote({note: "##", duration: length}, vextab, artist)
         }
         //if no result state is not changing
     } 
@@ -261,6 +261,7 @@ function allZeroes(data){
 function displayNote(obj, vextab, artist){
     temp+= obj.note
     temp += "/4"
+    console.log("temp " + temp)
     vextab.parse(temp)
     artist.render(renderer);
     temp = temp.substring(0,temp.length-2)
