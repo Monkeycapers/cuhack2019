@@ -53,9 +53,10 @@ let counter = 0
 
 vextab = VexTabDiv
 let temp = "tabstave notation=true tablature=false time=4/4\nnotes "
-VexTab = vextab.VexTab;
-Artist = vextab.Artist;
-Renderer = Vex.Flow.Renderer;
+VexTab = vextab.VexTab
+Artist = vextab.Artist
+Renderer = Vex.Flow.Renderer
+let first = true
 
 function onDataAvailable(evt) {
     console.log("push chunk data")
@@ -432,13 +433,15 @@ function allZeroes(data){
 function clearCanvas(){
     var canvas = document.getElementById('boo')
     const context = canvas.getContext('2d')
-    context.clearRect(100, 100, 1000, 1000)
+    context.clearRect(100, 100, 1500, 1500)
     temp = ""
+    first = true
 }
 function displayNote(obj){
+    console.log(first)
     var canvas = document.getElementById('boo')
     const context = canvas.getContext('2d')
-    context.clearRect(100, 100, 1000, 1000)
+    context.clearRect(100, 100, 1500, 1500)
 
     renderer = new Renderer($('#boo')[0], Renderer.Backends.CANVAS)
     artist = new Artist(10, 10, 1500, {scale: 0.8})
@@ -449,26 +452,28 @@ function displayNote(obj){
             temp = temp.substring(0, temp.length-1)
         }
         temp += "|"
+        console.log(temp)
     }
 
-    if (counter%32 == 0){
+    if (counter%32 == 0 && !first){
         temp += "\ntabstave notation=true tablature=false time=4/4\n notes "
+        console.log(temp)
+        first = !first
     }
 
     if(obj.note == "##"){
         if(temp.charAt(temp.length-1) == '-'){
             temp = temp.substring(0, temp.length-1)
-            temp += "/4"
         }
         temp+= "##"
         vextab.parse(temp)
+        console.log(temp)
         artist.render(renderer);
     }else{
-        temp+= obj.note
-        temp += "/4"
+        temp+= obj.note + "/4"
         vextab.parse(temp)
+        console.log(temp)
         artist.render(renderer);
-        temp = temp.substring(0,temp.length-2)
         temp += "-"
     }
     counter ++
