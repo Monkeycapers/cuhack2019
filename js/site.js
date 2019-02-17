@@ -35,6 +35,9 @@ const COUNTER_MAX = 70
 let readings = []
 let finalNote
 
+let noteStart = 0
+let noteStop = 0
+
 
 //var startButton = document.getElementById("start");
 //var stopButton = document.getElementById("stop");
@@ -135,6 +138,9 @@ var getFrequencies = function () {
         if(isNote) {
             console.log("changing to one state")
             state = STATES.one
+
+            noteStart = Date.now()
+            console.log(noteStart - noteStop) // LENGTH OF REST in ms
         }
         //if no result state is not changing
     } 
@@ -149,10 +155,11 @@ var getFrequencies = function () {
             //     sum += readings[i]
             // }
             // let avg = sum / readings.length
-            // console.log(getNote(getKeyNum(avg)))
-
+            // console.log(getNote(getKeyNum(avg))
+            noteStop = Date.now()
+            console.log(noteStop - noteStart) // LENGTH OF NOMTE in ms
             console.log(finalNote) // NOTE TO STEPH: FINAL NOTE HAS THE NOTE THAT YOU WANT
-            
+
             //console.log("changing to zero state")
             state = STATES.zero
             readings = []
@@ -166,6 +173,10 @@ var getFrequencies = function () {
     // csvContent.push(row)
 
     return {"array":dataArray, "length":bufferLength}
+}
+
+function getNote(){
+    return finalNote
 }
 
 function drawArray() {
