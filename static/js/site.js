@@ -49,6 +49,7 @@ let finalNote
 
 let noteStart = 0
 let noteStop = 0
+let counter = 0
 
 //let VexTabDiv = document.getElementById("boo")
 
@@ -430,37 +431,46 @@ function allZeroes(data){
 }
 function clearCanvas(){
     var canvas = document.getElementById('boo')
-    const context = canvas.getContext('2d');
-    context.clearRect(100, 100, 1000, 1000);
+    const context = canvas.getContext('2d')
+    context.clearRect(100, 100, 1000, 1000)
+    temp = ""
 }
 function displayNote(obj){
     var canvas = document.getElementById('boo')
-    const context = canvas.getContext('2d');
-    context.clearRect(100, 100, 1000, 1000);
+    const context = canvas.getContext('2d')
+    context.clearRect(100, 100, 1000, 1000)
 
-    renderer = new Renderer($('#boo')[0], Renderer.Backends.CANVAS);
-    artist = new Artist(10, 10, 1000, {scale: 0.8});
-    vextab = new VexTab(artist);
+    renderer = new Renderer($('#boo')[0], Renderer.Backends.CANVAS)
+    artist = new Artist(10, 10, 1500, {scale: 0.8})
+    vextab = new VexTab(artist)
+
+    if(counter%4 == 0){
+        if(temp.charAt(temp.length-1) == '-'){
+            temp = temp.substring(0, temp.length-1)
+        }
+        temp += "|"
+    }
+
+    if (counter%32 == 0){
+        temp += "\ntabstave notation=true tablature=false time=4/4\n notes "
+    }
 
     if(obj.note == "##"){
         if(temp.charAt(temp.length-1) == '-'){
-            //console.log("true?")
             temp = temp.substring(0, temp.length-1)
             temp += "/4"
-            //console.log(temp)
         }
         temp+= "##"
         vextab.parse(temp)
-        //console.log(temp)
         artist.render(renderer);
     }else{
         temp+= obj.note
         temp += "/4"
-        //console.log("temp " + temp)
         vextab.parse(temp)
         artist.render(renderer);
         temp = temp.substring(0,temp.length-2)
         temp += "-"
     }
+    counter ++
     
 }
