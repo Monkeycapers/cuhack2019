@@ -289,9 +289,9 @@ function drawArray() {
     requestAnimationFrame(drawArray)
     //let context = canvas.getContext("2d")
     freq = getFrequencies()
-    context.clearRect(0, 0, sizeX, sizeY)
+    context.clearRect(0, 0, canvas.width, sizeY)
     context.lineWidth = 1
-    let barWidth = 5
+    let barWidth = 4
     for (var i = 0; i < freq.length; i++) {
         context.strokeStyle = "white"
 
@@ -380,7 +380,7 @@ window.onload = function () {
     selectOpus = document.getElementById("selectOpus")
 
     canvas = document.getElementById("canvas")
-    canvas.width = sizeX
+    canvas.width = $(document).width()
     canvas.height = sizeY
     context = canvas.getContext("2d")
 
@@ -396,6 +396,10 @@ window.onload = function () {
     //var textarea = document.getElementById("textarea")
     //textarea.value = ""
 }
+
+$.ready(function () {
+    canvas.width = $(document).width();
+})
 
 function analyzeInput(data){
     return getNote(getKeyNum(getMaxFreq(data)))
