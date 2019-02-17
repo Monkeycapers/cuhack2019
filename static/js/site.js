@@ -14,7 +14,7 @@ let timer
 let running = false
 
 const FFT_SIZE = 8192
-const MIN_DB = -32
+let MIN_DB = -32
 
 STATES = {
     zero: 0,
@@ -208,7 +208,10 @@ var stop = function () {
 
 var getFrequencies = function () {
     analyser.fftSize = FFT_SIZE
-    analyser.minDecibels = MIN_DB
+
+    if(showVis.checked) analyser.minDecibels = -100
+    else analyser.minDecibels = -32
+
     let bufferLength = analyser.frequencyBinCount
     let dataArray = new Uint8Array(bufferLength)
     analyser.getByteFrequencyData(dataArray)
@@ -389,6 +392,10 @@ window.onload = function () {
     saveButton.onclick = save
     loadButton.onclick = load
 
+    showVis = document.getElementById("showVis")
+    noShowVis = document.getElementById("noShowVis")
+    noShowVis.checked = true
+    
     //var textarea = document.getElementById("textarea")
     //textarea.value = ""
 }
