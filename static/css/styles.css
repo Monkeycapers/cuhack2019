@@ -1,0 +1,142 @@
+html{
+	scroll-behavior: smooth;
+		overflow:hidden;
+		padding: 0;
+		margin: 0;
+}
+
+body
+{
+	
+	background-color: #474747;
+	padding:		0;
+	font-family:	"Calibri";
+	font-size:		24pt;
+	margin: 0;
+	padding: 0;
+}
+
+
+
+.topnav
+{
+	overflow: hidden;
+	background-color: black;
+	position: fixed;
+	width: 100%;
+}
+
+.topnav a
+{
+	float: left;
+	display: block;
+	color: white;
+	background-color: black;
+	text-align: center;
+	padding: 14px 16px;
+	text-decoration: none;
+	font-size: 17px;
+	letter-spacing: 1px;
+	-webkit-transition-duration: 0.4s;
+	transition-duration:		0.4s;
+	
+}
+
+.topnav a:hover
+{
+	background-color: #666666;
+}
+
+
+.searchButton
+{
+	background-color: 	#3a3a3a; 
+	color:				white;
+	font-family:		"Calibri";
+	font-size: 			14px;
+	letter-spacing:		1px;
+	-webkit-transition-duration:	0.4s;
+	transition-duration: 			0.4s;
+	border-color:					black;
+	border:							none;
+	height: 50px;
+	width: 	80px;
+	float: right;
+}
+
+.searchButton:hover
+{
+	background-color: #7a7a7a;
+}
+
+.searchBox
+{
+	background-color:black;
+	color: white;
+	padding-left: 20px;
+	-webkit-transition: width 0.4s ease-in-out, background-color 0.4s linear, border 0.4s linear;
+	transition: width 0.4s ease-in-out, background-color 0.4s linear, border 0.4s linear;
+	height:		40px;
+	width:		150px;
+	border:		2px solid #000000;
+	letter-spacing: 1px;
+	float: right;
+}
+
+.searchBox:hover{
+	background-color:	#282828;
+	color:				white;
+}
+
+
+.searchBox:focus
+{
+	background-color: #353535;
+	border:			  2px solid #932222;
+	width:				300px;
+}
+
+.myCanvas
+{
+	background-color: #ffffff;
+	margin: 10px;
+	width: 98%;
+}
+
+.title
+{
+	color: white;
+	font-family: "Calibri";
+	font-size: 40px;
+	text-align: left;
+	letter-spacing: 1px;
+	padding: 20px;
+}
+
+.footer{
+	color: white;
+	font-family: "Calibri";
+	font-size: 12px;
+	text-align: center;
+	min-height: 0px;
+	bottom: 0;
+}
+
+.about{
+	bottom: 0;
+}
+
+.aboutTitle{
+	color: white;
+	margin: 10px;
+}
+
+.aboutParagraph{
+	color: white;
+	font-size: 20px;
+	margin: 15px;
+}
+
+#spacer {
+	height: 100px;
+}
