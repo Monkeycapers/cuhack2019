@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+
+<head>
+    <link rel="stylesheet" href="static/css/styles.css">
+    <link rel="stylesheet" href="static/css/style.css">
+    <link href="http://www.vexflow.com/vextab/tabdiv.css" media="screen" rel="Stylesheet" type="text/css" />
+    <link href="http://www.vexflow.com/vextab/style.css" media="screen" rel="Stylesheet" type="text/css" />
+
+    <!-- VexFlow Compiled Source -->
+
+</head>
+
+<body style="padding-left: 0px; padding-top: 0px;">
+    <div class="topnav">
+        <a id = "start" href="#">PLAY</a>
+        <a id = "stop" href="#">STOP</a>
+        <input id = "selectMic" type="radio" name = "selectSource">
+        <label for="selectMic">Microphone</label>
+        <input id = "selectOpus" type = "radio" name = "selectSource">
+        <label for="selectOpus">File Playback</label>
+        <button class="searchButton" id = "loadButton">LOAD</button>
+        <button class="searchButton" id = "saveButton">SAVE</button>
+        <input id = "saveText" class="searchBox" type="border-box" placeholder="LOOK FOR SONGFILE">
+    </div>
+    <div id = "spacer"></div>
+    <canvas id = "boo">
+
+    </canvas>
+    <div id = "ok" style="width:680; margin-left: auto; margin-right: auto;"></div>
+
+    <div>
+        <!-- <input id = "start" type="button" value = "Start"> -->
+        <!-- <input id = "stop" type="button" value = "Stop"> -->
+        
+        <!-- <input id = "whatFreq" type ="button" value = "testFreq"> -->
+    </div>
+    <div>
+        <canvas id = "canvas">
+
+        </canvas>
+    </div>
+    <div>
+        <!-- <input id = "saveText" type="text" placeholder="Song Name To Save or Load ">
+        <input id = "saveButton" type="button" value="Save">
+        <input id = "loadButton" type="button" value="Load"> -->
+        <p id = "serverOutput"></p>
+    </div>
+    <div>
+        <audio id="audioPlayer" controls style="display:none;"></audio>
+    </div>
+    <div>
+        <textarea id = "textarea" value = "" style="display:none;">
+         </textarea>
+    </div>
+    
+    
+    <script src ="https://npmcdn.com/vexflow@1.2.87/releases/vexflow-debug.js"></script>
+    <script src="http://www.vexflow.com/build/vexflow/vexflow-debug.js"></script>
+    <script src="http://www.vexflow.com/vextab/support/vexflow-min.js"></script>
+    <script src="static/node_modules/vextab/releases/vextab-div.js"></script>
+
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.js"></script>
+    <script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+    <script src="http://www.vexflow.com/support/tabdiv-debug.js"></script>
+    <script src = "static/js/site.js"></script>
+</body>
