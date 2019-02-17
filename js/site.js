@@ -3,7 +3,9 @@ var myAudio = document.querySelector('audio');
 let audioCtx
 let audioSource
 let analyser
+
 const FFT_SIZE = 8192
+const MIN_DB = -32
 
 STATES = {
     zero: 0,
@@ -130,7 +132,8 @@ var stop = function () {
 }
 
 var getFrequencies = function () {
-    analyser.fftSize = FFT_SIZE //todo: what should this be?
+    analyser.fftSize = FFT_SIZE
+    analyser.minDecibels = MIN_DB
     let bufferLength = analyser.frequencyBinCount
     let dataArray = new Uint8Array(bufferLength)
     analyser.getByteFrequencyData(dataArray)
@@ -147,14 +150,28 @@ var getFrequencies = function () {
             noteStart = Date.now()
             let length = noteStart - noteStop
             console.log(length) // LENGTH OF REST in ms
-            if(length > 1000) displayNote({note: "##", duration: length}, vextab, artist)
+            if(length > 1000 && noteStop != 0) displayNote({note: "##", duration: length})
         }
         //if no result state is not changing
-    } 
-    if(state == STATES.one){ //state = reading
+    } else if(state == STATES.one){ //state = reading
         if(isNote) {
+            let prev = finalNote
             result = analyzeInput(dataArray)
-            if(result) finalNote = result
+            if(result) {
+                finalNote = result
+                
+                let index = notes.indexOf(prev)
+                if(prev && finalNote != prev && finalNote != notes[(index-1)%12] && finalNote != notes[(index+1)%12]) {
+                    noteStop = Date.now()
+                    let length = noteStop - noteStart
+                    if(length > 150){
+                        console.log(length) // LENGTH OF NOMTE in ms
+                        console.log(finalNote) // NOTE TO STEPH: FINAL NOTE HAS THE NOTE THAT YOU WANT
+                        displayNote({note: prev, duration: length})
+                    }
+                    noteStart = Date.now()
+                }
+            }
             //readings.push(getMaxFreq(dataArray))
         } else { //when no more notes
             // let sum = 0;
@@ -165,9 +182,12 @@ var getFrequencies = function () {
             // console.log(getNote(getKeyNum(avg))
             noteStop = Date.now()
             let length = noteStop - noteStart
-            console.log(length) // LENGTH OF NOMTE in ms
-            console.log(finalNote) // NOTE TO STEPH: FINAL NOTE HAS THE NOTE THAT YOU WANT
-            displayNote({note: finalNote, duration: length}, vextab, artist)
+            while(length > 0){
+                console.log(length) // LENGTH OF NOMTE in ms
+                console.log(finalNote) // NOTE TO STEPH: FINAL NOTE HAS THE NOTE THAT YOU WANT
+                displayNote({note: finalNote, duration: length})
+                length -= 700
+            }
             //console.log("changing to zero state")
             state = STATES.zero
             readings = []
@@ -256,7 +276,7 @@ function allZeroes(data){
     return true
 }
 
-function displayNote(obj, vextab, artist){
+function displayNote(obj){
     var canvas = document.getElementById('boo')
     const context = canvas.getContext('2d');
     context.clearRect(100, 100, 1000, 1000);
@@ -266,13 +286,20 @@ function displayNote(obj, vextab, artist){
     vextab = new VexTab(artist);
 
     if(obj.note == "##"){
-        temp += obj.note
+        if(temp.charAt(temp.length-1) == '-'){
+            //console.log("true?")
+            temp = temp.substring(0, temp.length-1)
+            temp += "/4"
+            //console.log(temp)
+        }
+        temp+= "##"
         vextab.parse(temp)
+        //console.log(temp)
         artist.render(renderer);
     }else{
         temp+= obj.note
         temp += "/4"
-        console.log("temp " + temp)
+        //console.log("temp " + temp)
         vextab.parse(temp)
         artist.render(renderer);
         temp = temp.substring(0,temp.length-2)
