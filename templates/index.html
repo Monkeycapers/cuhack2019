@@ -21,13 +21,14 @@
         <button class="searchButton" id = "loadButton">LOAD</button>
         <button class="searchButton" id = "saveButton">SAVE</button>
         <input id = "saveText" class="searchBox" type="border-box" placeholder="LOOK FOR SONGFILE">
+        <br>
         <input id="showVis" type="radio" name="selectVis">
+        <label for="selectMic">Visualizer (inaccurate note detection)</label>
         <input id="noShowVis" type="radio" name="selectVis">
+        <label for="selectMic">No Visualizer (accurate note detection)</label>
     </div>
     <div id = "spacer"></div>
-    <canvas id = "boo">
 
-    </canvas>
     <div id = "ok" style="width:680; margin-left: auto; margin-right: auto;"></div>
 
     <div>
@@ -41,6 +42,9 @@
 
         </canvas>
     </div>
+    <canvas id = "boo">
+
+    </canvas>
     <div>
         <!-- <input id = "saveText" type="text" placeholder="Song Name To Save or Load ">
         <input id = "saveButton" type="button" value="Save">

@@ -465,7 +465,6 @@ function displayNote(obj){
     if (counter%32 == 0 && !first){
         temp += "\ntabstave notation=true tablature=false time=4/4\n notes "
         console.log(temp)
-        first = !first
     }
 
     if(obj.note == "##"){
@@ -484,5 +483,6 @@ function displayNote(obj){
         temp += "-"
     }
     counter ++
+    first = false
     
 }
