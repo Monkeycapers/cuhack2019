@@ -14,7 +14,7 @@ let timer
 let running = false
 
 const FFT_SIZE = 8192
-const MIN_DB = -100
+const MIN_DB = -32
 
 STATES = {
     zero: 0,
@@ -42,8 +42,6 @@ let sizeY = 300
 let csvContent = []
 
 let notes = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"]
-let counter = 0
-const COUNTER_MAX = 70
 let readings = []
 let finalNote
 
@@ -222,7 +220,7 @@ var getFrequencies = function () {
 
     if(state == STATES.zero){
         if(isNote) {
-            console.log("changing to one state")
+            //console.log("changing to one state")
             state = STATES.one
 
             noteStart = Date.now()
@@ -243,8 +241,7 @@ var getFrequencies = function () {
                     noteStop = Date.now()
                     let length = noteStop - noteStart
                     if(length > 150){
-                        console.log(length) // LENGTH OF NOMTE in ms
-                        console.log(finalNote) // NOTE TO STEPH: FINAL NOTE HAS THE NOTE THAT YOU WANT
+                        console.log("Length: " + length + " " + "Note: " + finalNote) // LENGTH OF NOTE in ms
                         displayNote({note: prev, duration: length})
                     }
                     noteStart = Date.now()
@@ -261,8 +258,7 @@ var getFrequencies = function () {
             noteStop = Date.now()
             let length = noteStop - noteStart
             while(length > 0){
-                console.log(length) // LENGTH OF NOMTE in ms
-                console.log(finalNote) // NOTE TO STEPH: FINAL NOTE HAS THE NOTE THAT YOU WANT
+                console.log("Length: " + length + " " + "Note: " + finalNote) // LENGTH OF NOMTE in ms
                 displayNote({note: finalNote, duration: length})
                 length -= 700
             }
@@ -290,9 +286,9 @@ function drawArray() {
     requestAnimationFrame(drawArray)
     //let context = canvas.getContext("2d")
     freq = getFrequencies()
-    context.clearRect(0, 0, sizeX, sizeY)
+    context.clearRect(0, 0, canvas.width, sizeY)
     context.lineWidth = 1
-    let barWidth = 5
+    let barWidth = 4
     for (var i = 0; i < freq.length; i++) {
         context.strokeStyle = "white"
 
@@ -381,7 +377,7 @@ window.onload = function () {
     selectOpus = document.getElementById("selectOpus")
 
     canvas = document.getElementById("canvas")
-    canvas.width = sizeX
+    canvas.width = $(document).width()
     canvas.height = sizeY
     context = canvas.getContext("2d")
 
@@ -397,6 +393,10 @@ window.onload = function () {
     //var textarea = document.getElementById("textarea")
     //textarea.value = ""
 }
+
+$.ready(function () {
+    canvas.width = $(document).width();
+})
 
 function analyzeInput(data){
     return getNote(getKeyNum(getMaxFreq(data)))
