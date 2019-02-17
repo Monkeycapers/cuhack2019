@@ -38,6 +38,15 @@ let finalNote
 let noteStart = 0
 let noteStop = 0
 
+vextab = VexTabDiv
+let temp = "tabstave notation=true time=4/4"
+VexTab = vextab.VexTab;
+Artist = vextab.Artist;
+Renderer = Vex.Flow.Renderer;
+renderer = new Renderer($('#boo')[0], Renderer.Backends.CANVAS);
+artist = new Artist(10, 10, 1000, {scale: 0.8});
+vextab = new VexTab(artist);
+
 
 //var startButton = document.getElementById("start");
 //var stopButton = document.getElementById("stop");
@@ -247,4 +256,13 @@ function allZeroes(data){
         if(data[i] != 0) return false
     }
     return true
+}
+
+function displayNote(obj, vextab, artist){
+    temp+= obj.note
+    temp += "/4"
+    vextab.parse(temp)
+    artist.render(renderer);
+    temp = temp.substring(0,temp.length-2)
+    temp += "-"
 }
