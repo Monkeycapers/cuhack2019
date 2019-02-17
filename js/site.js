@@ -3,7 +3,14 @@ var myAudio = document.querySelector('audio');
 let audioCtx
 let audioSource
 let analyser
+const FFT_SIZE = 8192
 
+STATES = {
+    zero: 0,
+    reading: 1
+}
+
+let state = STATES.zero
 
 //inputs
 
@@ -21,6 +28,13 @@ let timer
 let running = false
 
 let csvContent = []
+
+let notes = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"]
+let counter = 0
+const COUNTER_MAX = 70
+let readings = []
+let finalNote
+
 
 //var startButton = document.getElementById("start");
 //var stopButton = document.getElementById("stop");
@@ -108,16 +122,48 @@ var stop = function () {
 }
 
 var getFrequencies = function () {
-    analyser.fftSize = 2048 //todo: what should this be?
+    analyser.fftSize = FFT_SIZE //todo: what should this be?
     let bufferLength = analyser.frequencyBinCount
     let dataArray = new Uint8Array(bufferLength)
     analyser.getByteFrequencyData(dataArray)
 
     //drawArray(dataArray, bufferLength)
     //console.log(dataArray)
+    isNote = !allZeroes(dataArray)
 
-    let row = dataArray.join(",")
-    csvContent.push(row)
+    if(state == STATES.zero){
+        if(isNote) {
+            console.log("changing to one state")
+            state = STATES.one
+        }
+        //if no result state is not changing
+    } 
+    if(state == STATES.one){ //state = reading
+        if(isNote) {
+            result = analyzeInput(dataArray)
+            if(result) finalNote = result
+            //readings.push(getMaxFreq(dataArray))
+        } else { //when no more notes
+            // let sum = 0;
+            // for(let i = 0;i < readings.length;i++){
+            //     sum += readings[i]
+            // }
+            // let avg = sum / readings.length
+            // console.log(getNote(getKeyNum(avg)))
+
+            console.log(finalNote) // NOTE TO STEPH: FINAL NOTE HAS THE NOTE THAT YOU WANT
+            
+            //console.log("changing to zero state")
+            state = STATES.zero
+            readings = []
+        }
+    }
+
+    // let result = analyzeInput(dataArray)
+    // if(result) console.log(result)
+
+    // let row = dataArray.join(",")
+    // csvContent.push(row)
 
     return {"array":dataArray, "length":bufferLength}
 }
@@ -159,59 +205,34 @@ window.onload = function () {
     textarea.value = ""
 }
 
+function analyzeInput(data){
+    return getNote(getKeyNum(getMaxFreq(data)))
+}
 
-// // create float32 arrays for getFrequencyResponse
-// var myFrequencyArray = new Float32Array(5);
-// myFrequencyArray[0] = 1000;
-// myFrequencyArray[1] = 2000;
-// myFrequencyArray[2] = 3000;
-// myFrequencyArray[3] = 4000;
-// myFrequencyArray[4] = 5000;
-// var magResponseOutput = new Float32Array(5);
-// var phaseResponseOutput = new Float32Array(5);
-// // getUserMedia block - grab stream
-// // put it into a MediaStreamAudioSourceNode
-// // also output the visuals into a video element 
-// if (navigator.mediaDevices) {
-//     console.log('getUserMedia supported.');
-//     navigator.mediaDevices.getUserMedia ({audio: true, video: false})
-//     .then(function(stream) {
-        
-//         // Create a MediaStreamAudioSourceNode
-//         // Feed the HTMLMediaElement into it
-//         audioCtx = new AudioContext();
-//         audioSource = audioCtx.createMediaStreamSource(stream);
+function getMaxFreq(data){
+    let maxValue = 0
+    let maxIndex = 0
+    for(let i = 0;i < data.length;i++){
+        if(data[i] > maxValue) {
+            maxValue = data[i]
+            maxIndex = i + 1
+        }
+    }
+    freq = maxIndex * ((44100 / analyser.fftSize) / 2)
+    return freq // Sample rate/FFT size
+}
 
-//         // // Create a biquadfilter
-//         // var biquadFilter = audioCtx.createBiquadFilter();
-//         // biquadFilter.type = "lowshelf";
-//         // biquadFilter.frequency.value = 1000;
-//         // biquadFilter.gain.value = range.value;
+function getKeyNum(freq){
+    return Math.round(12*Math.log2(freq/440) + 49)
+}
 
-//         // connect the AudioBufferSourceNode to the gainNode
-//         // and the gainNode to the destination, so we can play the
-//         // music and adjust the volume using the mouse cursor
-//         //source.connect(biquadFilter);
+function getNote(keyNum){
+    return notes[(keyNum) % 12]
+}
 
-//         //biquadFilter.connect(audioCtx.destination);
-//         // Get new mouse pointer coordinates when mouse is moved
-//         // then set new gain value
-//         // range.oninput = function() {
-//         //     biquadFilter.gain.value = range.value;
-//         // }
-//         // function calcFrequencyResponse() {
-//         //     biquadFilter.getFrequencyResponse(myFrequencyArray,magResponseOutput,phaseResponseOutput);
-//         //     for (i = 0; i <= myFrequencyArray.length-1;i++){
-//         //         var listItem = document.createElement('li');
-//         //         listItem.innerHTML = '<strong>' + myFrequencyArray[i] + 'Hz</strong>: Magnitude ' + magResponseOutput[i] + ', Phase ' + phaseResponseOutput[i] + ' radians.';
-//         //         freqResponseOutput.appendChild(listItem);
-//         //     }
-//         // }
-//         // calcFrequencyResponse();
-//     })
-//     .catch(function(err) {
-//         console.log('The following gUM error occured: ' + err);
-//     });
-// } else {
-//     console.log('getUserMedia not supported on your browser!');
-// }
+function allZeroes(data){
+    for(let i = 0;i < data.length;i++){
+        if(data[i] != 0) return false
+    }
+    return true
+}
