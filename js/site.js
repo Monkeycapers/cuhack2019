@@ -144,7 +144,7 @@ var getFrequencies = function () {
 
     if(state == STATES.zero){
         if(isNote) {
-            console.log("changing to one state")
+            //console.log("changing to one state")
             state = STATES.one
 
             noteStart = Date.now()
@@ -165,8 +165,7 @@ var getFrequencies = function () {
                     noteStop = Date.now()
                     let length = noteStop - noteStart
                     if(length > 150){
-                        console.log(length) // LENGTH OF NOMTE in ms
-                        console.log(finalNote) // NOTE TO STEPH: FINAL NOTE HAS THE NOTE THAT YOU WANT
+                        console.log("Length: " + length + " " + "Note: " + finalNote) // LENGTH OF NOMTE in ms
                         displayNote({note: prev, duration: length})
                     }
                     noteStart = Date.now()
@@ -183,8 +182,7 @@ var getFrequencies = function () {
             noteStop = Date.now()
             let length = noteStop - noteStart
             while(length > 0){
-                console.log(length) // LENGTH OF NOMTE in ms
-                console.log(finalNote) // NOTE TO STEPH: FINAL NOTE HAS THE NOTE THAT YOU WANT
+                console.log("Length: " + length + " " + "Note: " + finalNote) 
                 displayNote({note: finalNote, duration: length})
                 length -= 700
             }
