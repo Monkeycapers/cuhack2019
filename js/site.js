@@ -9,10 +9,16 @@ let analyser = audioCtx.createAnalyser()
 
 let startButton
 let stopButton
-
 let testFreq
+let canvas
+let context
+
+let sizeX = 1500
+let sizeY = 900
 
 let timer
+
+let csvContent = []
 
 //var startButton = document.getElementById("start");
 //var stopButton = document.getElementById("stop");
@@ -34,6 +40,8 @@ var start = function () {
 
             audioSource.connect(analyser)
             analyser.connect(audioCtx.destination)
+
+            drawArray()
             
         })
         .catch(function(err) {
@@ -52,7 +60,32 @@ var stop = function () {
     if (audioCtx) {
          audioCtx.close().then(function () {
             //for now, refresh the window
-            location.reload()
+            //location.reload()
+
+            for(let i = 0;i < csvContent.length;i++){
+                let nonzero = false
+                for(let j = 0;j < csvContent[i].length;j++){
+                    if(csvContent[i][j] != 0) {
+                        nonzero = true
+                        break
+                    }
+                }
+                if(!nonzero) csvContent.splice(i,1);
+            }
+            //var data = encodeURI('data:text/csv;charset=utf-8,' + csvContent.join("\n"));
+            
+            console.log("thinking")
+
+            var textarea = document.getElementById("textarea");
+            textarea.value = csvContent.join("\n")
+
+
+
+            // var link = document.createElement('a');
+            // link.setAttribute('href', data);
+            // link.setAttribute('download', 'data.csv');
+            // link.click();
+
         })
     }
     if (timer) {
@@ -67,18 +100,49 @@ var getFrequencies = function () {
     let dataArray = new Uint8Array(bufferLength)
     analyser.getByteFrequencyData(dataArray)
 
+    //drawArray(dataArray, bufferLength)
+    //console.log(dataArray)
+
+    let row = dataArray.join(",")
+    csvContent.push(row)
+
+    return {"array":dataArray, "length":bufferLength}
+}
+
+function drawArray() {
+    requestAnimationFrame(drawArray)
+    //let context = canvas.getContext("2d")
+    freq = getFrequencies()
+    context.clearRect(0, 0, sizeX, sizeY)
+    context.lineWidth = 1
+    let barWidth = 4
+    for (var i = 0; i < freq.length; i++) {
+        context.strokeStyle = "red"
+        context.fillStyle = "black"
+        context.fillRect(i * barWidth, 255 - freq.array[i], barWidth, freq.array[i])
+        context.strokeRect(i * barWidth, 255 - freq.array[i], barWidth, freq.array[i])
+    }
+
     
 
-    //console.log(dataArray.sort()[bufferLength - 1])
 }
 
 window.onload = function () {
     startButton = document.getElementById("start")
     stopButton = document.getElementById("stop")
     testFreq = document.getElementById("whatFreq")
+
+    canvas = document.getElementById("canvas")
+    canvas.width = sizeX
+    canvas.height = sizeY
+    context = canvas.getContext("2d")
     testFreq.onclick = getFrequencies()
+
     startButton.onclick = start
     stopButton.onclick = stop
+
+    var textarea = document.getElementById("textarea")
+    textarea.value = ""
 }
 
 
