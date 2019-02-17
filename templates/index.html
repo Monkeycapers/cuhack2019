@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 
 <head>
+    <link rel="stylesheet" href="static/css/styles.css">
     <link rel="stylesheet" href="static/css/style.css">
     <link href="http://www.vexflow.com/vextab/tabdiv.css" media="screen" rel="Stylesheet" type="text/css" />
     <link href="http://www.vexflow.com/vextab/style.css" media="screen" rel="Stylesheet" type="text/css" />
@@ -9,18 +10,29 @@
 
 </head>
 
-<body>
-    <canvas id = "boo"></canvas>
-    <div id = "ok" style="width:680; margin-left: auto; margin-right: auto;"></div>
-
-    <div>
-        <input id = "start" type="button" value = "Start">
-        <input id = "stop" type="button" value = "Stop">
+<body style="padding-left: 0px; padding-top: 0px;">
+    <div class="topnav">
+        <a id = "start" href="#">PLAY</a>
+        <a id = "stop" href="#">STOP</a>
         <input id = "selectMic" type="radio" name = "selectSource">
         <label for="selectMic">Microphone</label>
         <input id = "selectOpus" type = "radio" name = "selectSource">
-        <label for="selectOpus">Select File Playback</label>
-        <input id = "whatFreq" type ="button" value = "testFreq">
+        <label for="selectOpus">File Playback</label>
+        <button class="searchButton" id = "loadButton">LOAD</button>
+        <button class="searchButton" id = "saveButton">SAVE</button>
+        <input id = "saveText" class="searchBox" type="border-box" placeholder="LOOK FOR SONGFILE">
+    </div>
+    <div id = "spacer"></div>
+    <canvas id = "boo">
+
+    </canvas>
+    <div id = "ok" style="width:680; margin-left: auto; margin-right: auto;"></div>
+
+    <div>
+        <!-- <input id = "start" type="button" value = "Start"> -->
+        <!-- <input id = "stop" type="button" value = "Stop"> -->
+        
+        <!-- <input id = "whatFreq" type ="button" value = "testFreq"> -->
     </div>
     <div>
         <canvas id = "canvas">
@@ -28,16 +40,16 @@
         </canvas>
     </div>
     <div>
-        <input id = "saveText" type="text" placeholder="Song Name To Save or Load ">
+        <!-- <input id = "saveText" type="text" placeholder="Song Name To Save or Load ">
         <input id = "saveButton" type="button" value="Save">
-        <input id = "loadButton" type="button" value="Load">
+        <input id = "loadButton" type="button" value="Load"> -->
         <p id = "serverOutput"></p>
     </div>
     <div>
-        <audio id="audioPlayer" controls></audio>
+        <audio id="audioPlayer" controls style="display:none;"></audio>
     </div>
     <div>
-        <textarea id = "textarea" value = "">
+        <textarea id = "textarea" value = "" style="display:none;">
          </textarea>
     </div>
     
