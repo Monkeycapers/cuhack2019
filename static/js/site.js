@@ -451,7 +451,7 @@ function displayNote(obj){
     context.clearRect(100, 100, 1500, 1500)
 
     renderer = new Renderer($('#boo')[0], Renderer.Backends.CANVAS)
-    artist = new Artist(10, 10, 1500, {scale: 0.8})
+    artist = new Artist(10, 10, 2350, {scale: 0.8})
     vextab = new VexTab(artist)
 
     if(counter%4 == 0){
