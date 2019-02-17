@@ -1,8 +1,8 @@
 
 var myAudio = document.querySelector('audio');
-let audioCtx = new AudioContext()
+let audioCtx
 let audioSource
-let analyser = audioCtx.createAnalyser()
+let analyser
 
 
 //inputs
@@ -14,9 +14,11 @@ let canvas
 let context
 
 let sizeX = 1500
-let sizeY = 900
+let sizeY = 300
 
 let timer
+
+let running = false
 
 let csvContent = []
 
@@ -24,17 +26,27 @@ let csvContent = []
 //var stopButton = document.getElementById("stop");
 
 var start = function () {
+    if (running) {
+        alert("Already started!")
+        return
+    }
     if (navigator.mediaDevices) {
         console.log('getUserMedia supported.');
         navigator.mediaDevices.getUserMedia ({audio: true, video: false})
         .then(function(stream) {
 
-            timer = window.setInterval(getFrequencies, 1);
+            //timer = window.setInterval(getFrequencies, 1);
             
             console.log("in then func")
             
             // Create a MediaStreamAudioSourceNode
             // Feed the HTMLMediaElement into it
+
+            running = true
+            
+            audioCtx = new AudioContext()
+
+            analyser = audioCtx.createAnalyser()
 
             audioSource = audioCtx.createMediaStreamSource(stream)
 
@@ -57,6 +69,7 @@ var start = function () {
 }
 
 var stop = function () {
+    running = false
     if (audioCtx) {
          audioCtx.close().then(function () {
             //for now, refresh the window
@@ -110,6 +123,7 @@ var getFrequencies = function () {
 }
 
 function drawArray() {
+    if (!running) return;
     requestAnimationFrame(drawArray)
     //let context = canvas.getContext("2d")
     freq = getFrequencies()
@@ -136,7 +150,7 @@ window.onload = function () {
     canvas.width = sizeX
     canvas.height = sizeY
     context = canvas.getContext("2d")
-    testFreq.onclick = getFrequencies()
+    //testFreq.onclick = getFrequencies()
 
     startButton.onclick = start
     stopButton.onclick = stop
