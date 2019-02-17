@@ -75,7 +75,7 @@ var start = function () {
         })
         .catch(function(err) {
             console.log('The following gUM error occured: ' + err);
-        });
+        }); 
         
     } else {
         console.log('getUserMedia not supported on your browser!');
@@ -103,8 +103,6 @@ var stop = function () {
                 if(!nonzero) csvContent.splice(i,1);
             }
             //var data = encodeURI('data:text/csv;charset=utf-8,' + csvContent.join("\n"));
-            
-            console.log("thinking")
 
             var textarea = document.getElementById("textarea");
             textarea.value = csvContent.join("\n")
@@ -140,7 +138,9 @@ var getFrequencies = function () {
             state = STATES.one
 
             noteStart = Date.now()
-            console.log(noteStart - noteStop) // LENGTH OF REST in ms
+            let length = noteStart - noteStop
+            console.log(length) // LENGTH OF REST in ms
+            displayNote({note: "##", duration: length}, vextab, artist)
         }
         //if no result state is not changing
     } 
@@ -157,9 +157,10 @@ var getFrequencies = function () {
             // let avg = sum / readings.length
             // console.log(getNote(getKeyNum(avg))
             noteStop = Date.now()
-            console.log(noteStop - noteStart) // LENGTH OF NOMTE in ms
+            let length = noteStop - noteStart
+            console.log(length) // LENGTH OF NOMTE in ms
             console.log(finalNote) // NOTE TO STEPH: FINAL NOTE HAS THE NOTE THAT YOU WANT
-
+            displayNote({note: finalNote, duration: length}, vextab, artist)
             //console.log("changing to zero state")
             state = STATES.zero
             readings = []
